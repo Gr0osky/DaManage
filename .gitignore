@@ -1,0 +1,110 @@
+# Root
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Environment / Secrets
+.env
+.env.*
+!*.example
+
+# Node backend
+usdm-backend/node_modules/
+usdm-backend/npm-debug.log*
+usdm-backend/yarn-error.log
+usdm-backend/pnpm-lock.yaml
+usdm-backend/.npmrc
+
+# Build outputs
+usdm-backend/dist/
+
+# Flutter / Dart
+usdm_gui/.dart_tool/
+usdm_gui/.packages
+usdm_gui/.flutter-plugins
+usdm_gui/.flutter-plugins-dependencies
+usdm_gui/.metadata
+usdm_gui/build/
+
+# Flutter platform builds
+usdm_gui/ios/Flutter/Flutter.framework
+usdm_gui/ios/Flutter/Flutter.podspec
+usdm_gui/ios/Flutter/Generated.xcconfig
+usdm_gui/ios/Flutter/app.flx
+usdm_gui/ios/Flutter/app.zip
+usdm_gui/ios/Flutter/flutter_export_environment.sh
+usdm_gui/ios/ServiceDefinitions.json
+usdm_gui/ios/Runner/GeneratedPluginRegistrant.*
+
+# CocoaPods
+usdm_gui/ios/Pods/
+usdm_gui/ios/Podfile.lock
+
+# Android
+usdm_gui/android/.gradle/
+usdm_gui/android/.idea/
+usdm_gui/android/local.properties
+usdm_gui/android/**/generated/
+usdm_gui/android/**/captures/
+usdm_gui/android/**/outputs/
+
+# VS Code / IDE
+.vscode/
+.idea/
+
+# Coverage
+coverage/
+
+# Lock files (optional - keep if using)
+# usdm_gui/pubspec.lock
+# usdm-backend/package-lock.json
+
+# Misc
+**/*.iml
+
+# -------- Additional Flutter platform artifacts --------
+# iOS/macOS Xcode
+usdm_gui/ios/DerivedData/
+usdm_gui/ios/.generated/
+usdm_gui/ios/Runner.xcworkspace/xcuserdata/
+usdm_gui/ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+usdm_gui/ios/.symlinks/
+usdm_gui/ios/Flutter/ephemeral/
+usdm_gui/macos/DerivedData/
+usdm_gui/macos/Pods/
+usdm_gui/macos/Podfile.lock
+usdm_gui/macos/Flutter/ephemeral/
+
+# Android
+usdm_gui/android/key.properties
+usdm_gui/android/*.keystore
+usdm_gui/android/**/*.keystore
+usdm_gui/android/*.jks
+usdm_gui/android/**/*.jks
+usdm_gui/android/.cxx/
+
+# Windows
+usdm_gui/windows/flutter/ephemeral/
+usdm_gui/windows/Runner/GeneratedPluginRegistrant.*
+
+# Linux
+usdm_gui/linux/flutter/ephemeral/
+usdm_gui/linux/flutter/generated_plugin_registrant.*
+
+# Web (build artifacts covered by build/)
+usdm_gui/build/web/
+
+# Flutter tool state
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.packages
+
+# Node/npm logs (catch-all)
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

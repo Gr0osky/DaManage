@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:usdm_gui/services/api_client.dart';
+import 'package:usdm_gui/screens/vault_screen.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -133,38 +135,25 @@ class _LoginFormState extends State<LoginForm> {
               );
               return;
             }
-
             try {
-              final response = await http.post(
-                Uri.parse('http://localhost:3000/login'),
-                headers: {'Content-Type': 'application/json'},
-                body: jsonEncode({'username': username, 'password': password}),
+              await ApiClient().login(username, password);
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Login succesfull!"),
+                  backgroundColor: Colors.green,
+                ),
               );
-
-              if (response.statusCode == 200) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Login succesfull!"),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-
-                _usernameController.clear();
-                _passwordController.clear();
-              } else {
-                final errorMsg =
-                    jsonDecode(response.body)['error'] ?? "Login failed";
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(errorMsg),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
+              _usernameController.clear();
+              _passwordController.clear();
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const VaultScreen()),
+              );
             } catch (e) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text("Connection failed: $e")));
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+              );
             }
           },
           style: ButtonStyle(

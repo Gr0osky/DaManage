@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:usdm_gui/services/api_client.dart';
+import 'package:usdm_gui/screens/login_screen.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
@@ -133,38 +135,25 @@ class _SignUpFormState extends State<SignUpForm> {
               );
               return;
             }
-
             try {
-              final response = await http.post(
-                Uri.parse('http://localhost:3000/signup'),
-                headers: {'Content-Type': 'application/json'},
-                body: jsonEncode({'username': username, 'password': password}),
+              await ApiClient().signup(username, password);
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Account created successfully!"),
+                  backgroundColor: Colors.green,
+                ),
               );
-
-              if (response.statusCode == 201) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Account created successfully!"),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-
-                _usernameController.clear();
-                _passwordController.clear();
-              } else {
-                final errorMsg =
-                    jsonDecode(response.body)['error'] ?? "Signup failed";
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(errorMsg),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
+              _usernameController.clear();
+              _passwordController.clear();
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+              );
             } catch (e) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text("Connection failed: $e")));
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+              );
             }
           },
 
