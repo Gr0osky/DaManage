@@ -110,15 +110,21 @@ app.post('/login', async (req, res) => {
 
 function auth(req, res, next) {
   const header = req.headers['authorization'] || '';
+  console.log(' Authorization header received:', header); 
+
   const parts = header.split(' ');
   if (parts.length !== 2 || parts[0] !== 'Bearer') {
+    console.log('❌ Malformed or missing Authorization header');
     return res.status(401).json({ error: 'Unauthorized' });
   }
+
   try {
-    const payload = jwt.verify(parts[1], process.env.JWT_SECRET || 'dev_jwt_secret_change_me');
+    const payload = jwt.verify(parts[1], process.env.JWT_SECRET);
     req.userId = payload.sub;
+    console.log('Authenticated user ID:', req.userId);
     next();
   } catch (e) {
+    console.log(' JWT verification failed:', e.message);
     return res.status(401).json({ error: 'Unauthorized' });
   }
 }

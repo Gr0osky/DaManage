@@ -9,63 +9,67 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // Background and main content
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.white54, Colors.white70],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 80),
-                Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Container(
-                        width: 700,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 32,
-                          horizontal: 24,
+          // Solid black background
+          Container(color: Colors.black),
+
+          // Main content glass panel
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 80),
+              Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width > 750
+                          ? 700
+                          : MediaQuery.of(context).size.width * 0.92,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 36,
+                        horizontal: 28,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.75),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          width: 1.5,
+                          color: Colors.white.withOpacity(0.18),
                         ),
-                        decoration: BoxDecoration(
-                          color: Colors.blueGrey.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            width: 1.5,
-                            color: Colors.blueGrey.withOpacity(0.3),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.4),
+                            blurRadius: 24,
+                            offset: const Offset(0, 8),
                           ),
-                        ),
-                        child: const Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            AppLogoLogin(),
-                            SizedBox(height: 50),
-                            LoginForm(),
-                          ],
-                        ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          AppLogoLogin(),
+                          SizedBox(height: 50),
+                          LoginForm(),
+                        ],
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
 
-          // Back button in top-right
+          // Back button (top-left)
           Positioned(
             top: 40,
             left: 20,
             child: HoverableBackButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Go back
+                Navigator.of(context).pop();
               },
               size: 50,
             ),
@@ -85,15 +89,15 @@ class AppLogoLogin extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Logo container
+        // Logo with white glow
         Container(
           margin: const EdgeInsets.only(right: 50),
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
-                color: Colors.black26,
-                blurRadius: 8,
-                offset: Offset(0, 4),
+                color: Colors.white.withOpacity(0.15),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
               ),
             ],
             borderRadius: BorderRadius.circular(20),
@@ -101,7 +105,6 @@ class AppLogoLogin extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Image.asset(
-              // If you keep assets inside lib/, adjust path in pubspec.yaml
               'lib/assets/images/logo.png',
               width: 100,
               height: 100,
@@ -110,17 +113,17 @@ class AppLogoLogin extends StatelessWidget {
           ),
         ),
 
-        // RichText for better brand emphasis
+        // White "LOGIN" text
         RichText(
-          text: TextSpan(
-            style: const TextStyle(fontFamily: 'seouge-ui'),
+          text: const TextSpan(
+            style: TextStyle(fontFamily: 'seouge-ui'),
             children: [
               TextSpan(
                 text: "LOGIN",
                 style: TextStyle(
                   fontSize: 60,
                   fontWeight: FontWeight.bold,
-                  color: Colors.blueGrey[700],
+                  color: Colors.white,
                 ),
               ),
             ],
