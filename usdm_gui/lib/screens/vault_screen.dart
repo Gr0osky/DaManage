@@ -62,174 +62,175 @@ class _VaultScreenState extends State<VaultScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) {
-        return BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-          child: Container(
-            color: Colors.black.withOpacity(0.6),
-            alignment: Alignment.center,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final screenWidth = constraints.maxWidth;
-                final dialogWidth = screenWidth > 600
-                    ? 520.0
-                    : screenWidth * 0.92;
-                return SizedBox(
-                  width: dialogWidth,
-                  child: Dialog(
-                    backgroundColor: Colors.transparent,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.85),
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.15),
-                          width: 1.5,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.5),
-                            blurRadius: 30,
-                            offset: const Offset(0, 12),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(30),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Header
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.lock,
-                                  color: Colors.white70,
-                                  size: 28,
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Text(
-                                'Add New Vault Item',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  fontFamily: 'seouge-ui',
-                                ),
+        bool obscure = true;
+        return StatefulBuilder(
+          builder: (ctx, setStateSB) {
+            return BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+              child: Container(
+                color: Colors.black.withOpacity(0.6),
+                alignment: Alignment.center,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final screenWidth = constraints.maxWidth;
+                    final dialogWidth = screenWidth > 600 ? 520.0 : screenWidth * 0.92;
+                    return SizedBox(
+                      width: dialogWidth,
+                      child: Dialog(
+                        backgroundColor: Colors.transparent,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.85),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.15),
+                              width: 1.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.5),
+                                blurRadius: 30,
+                                offset: const Offset(0, 12),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 26),
-
-                          // Form Fields
-                          _buildTextField(
-                            controller: titleCtrl,
-                            label: 'Title',
-                            icon: Icons.title,
-                          ),
-                          const SizedBox(height: 20),
-                          _buildTextField(
-                            controller: userCtrl,
-                            label: 'Username',
-                            icon: Icons.person,
-                          ),
-                          const SizedBox(height: 20),
-                          _buildTextField(
-                            controller: urlCtrl,
-                            label: 'URL',
-                            icon: Icons.language,
-                          ),
-                          const SizedBox(height: 20),
-                          _buildTextField(
-                            controller: passCtrl,
-                            label: 'Password',
-                            icon: Icons.lock,
-                            obscureText: true,
-                            suffixIcon: IconButton(
-                              icon: const Icon(Icons.visibility_off, size: 20),
-                              color: Colors.white54,
-                              onPressed: () {},
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          _buildTextField(
-                            controller: notesCtrl,
-                            label: 'Notes',
-                            icon: Icons.notes,
-                            maxLines: 3,
-                          ),
-                          const SizedBox(height: 26),
-
-                          // Action Buttons
-                          Row(
+                          padding: const EdgeInsets.all(30),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: OutlinedButton(
-                                  onPressed: () => Navigator.of(ctx).pop(false),
-                                  style: OutlinedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 16,
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.1),
+                                      shape: BoxShape.circle,
                                     ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    side: BorderSide(
-                                      color: Colors.white.withOpacity(0.3),
-                                      width: 1.5,
+                                    child: const Icon(
+                                      Icons.lock,
+                                      color: Colors.white70,
+                                      size: 28,
                                     ),
                                   ),
-                                  child: Text(
-                                    'Cancel',
+                                  const SizedBox(width: 16),
+                                  Text(
+                                    'Add New Vault Item',
                                     style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                       fontFamily: 'seouge-ui',
                                     ),
                                   ),
+                                ],
+                              ),
+                              const SizedBox(height: 26),
+
+                              _buildTextField(
+                                controller: titleCtrl,
+                                label: 'Title',
+                                icon: Icons.title,
+                              ),
+                              const SizedBox(height: 20),
+                              _buildTextField(
+                                controller: userCtrl,
+                                label: 'Username',
+                                icon: Icons.person,
+                              ),
+                              const SizedBox(height: 20),
+                              _buildTextField(
+                                controller: urlCtrl,
+                                label: 'URL',
+                                icon: Icons.language,
+                              ),
+                              const SizedBox(height: 20),
+                              _buildTextField(
+                                controller: passCtrl,
+                                label: 'Password',
+                                icon: Icons.lock,
+                                obscureText: obscure,
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    obscure ? Icons.visibility_off : Icons.visibility,
+                                    size: 20,
+                                  ),
+                                  color: Colors.white54,
+                                  onPressed: () {
+                                    setStateSB(() => obscure = !obscure);
+                                  },
                                 ),
                               ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () => Navigator.of(ctx).pop(true),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 16,
+                              const SizedBox(height: 20),
+                              _buildTextField(
+                                controller: notesCtrl,
+                                label: 'Notes',
+                                icon: Icons.notes,
+                                maxLines: 3,
+                              ),
+                              const SizedBox(height: 26),
+
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: OutlinedButton(
+                                      onPressed: () => Navigator.of(ctx).pop(false),
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(vertical: 16),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        side: BorderSide(
+                                          color: Colors.white.withOpacity(0.3),
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Cancel',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                          fontFamily: 'seouge-ui',
+                                        ),
+                                      ),
                                     ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    elevation: 0,
                                   ),
-                                  child: Text(
-                                    'Save to Vault',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.black,
-                                      fontFamily: 'seouge-ui',
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () => Navigator.of(ctx).pop(true),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(vertical: 16),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        elevation: 0,
+                                      ),
+                                      child: Text(
+                                        'Save to Vault',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.black,
+                                          fontFamily: 'seouge-ui',
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
         );
       },
     );
