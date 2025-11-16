@@ -37,9 +37,7 @@
 - [📦 Project Structure](#-project-structure)
 - [🌐 API Endpoints](#-api-endpoints)
 - [🛠️ Troubleshooting](#️-troubleshooting)
-- [🗺️ Roadmap](#️-roadmap)
 - [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
 
 ---
 
