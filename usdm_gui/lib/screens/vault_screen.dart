@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:usdm_gui/services/api_client.dart';
 import 'package:flutter/services.dart';
 import 'package:usdm_gui/screens/home_page.dart';
+import 'package:usdm_gui/widgets/password_generator.dart';
+import 'package:usdm_gui/widgets/theme_switcher.dart';
 
 class VaultScreen extends StatefulWidget {
   const VaultScreen({super.key});
@@ -20,6 +22,21 @@ class _VaultScreenState extends State<VaultScreen> {
   void initState() {
     super.initState();
     _init();
+  }
+
+  Future<void> _openPasswordGenerator(
+    TextEditingController controller,
+    VoidCallback refresh,
+  ) async {
+    final password = await showDialog<String>(
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => PasswordGenerator(onPasswordGenerated: (_) {}),
+    );
+
+    if (password == null || password.isEmpty) return;
+    controller.text = password;
+    refresh();
   }
 
   Future<void> _init() async {
@@ -58,6 +75,7 @@ class _VaultScreenState extends State<VaultScreen> {
     final urlCtrl = TextEditingController();
     final passCtrl = TextEditingController();
     final notesCtrl = TextEditingController();
+    final theme = Theme.of(context);
 
     final ok = await showDialog<bool>(
       context: context,
@@ -68,7 +86,7 @@ class _VaultScreenState extends State<VaultScreen> {
             return BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
               child: Container(
-                color: Colors.black.withOpacity(0.6),
+                color: Colors.black.withOpacity(0.4),
                 alignment: Alignment.center,
                 child: LayoutBuilder(
                   builder: (context, constraints) {
@@ -80,15 +98,15 @@ class _VaultScreenState extends State<VaultScreen> {
                         backgroundColor: Colors.transparent,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.85),
-                            borderRadius: BorderRadius.circular(24),
+                            color: theme.colorScheme.surface,
+                            borderRadius: BorderRadius.circular(28),
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.15),
-                              width: 1.5,
+                              color: theme.colorScheme.primary.withOpacity(0.3),
+                              width: 2,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.5),
+                                color: theme.colorScheme.primary.withOpacity(0.2),
                                 blurRadius: 30,
                                 offset: const Offset(0, 12),
                               ),
@@ -102,25 +120,32 @@ class _VaultScreenState extends State<VaultScreen> {
                               Row(
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.all(10),
+                                    padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.1),
-                                      shape: BoxShape.circle,
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          theme.colorScheme.primary,
+                                          theme.colorScheme.secondary,
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: const Icon(
-                                      Icons.lock,
-                                      color: Colors.white70,
+                                      Icons.add_circle_outline,
+                                      color: Colors.white,
                                       size: 28,
                                     ),
                                   ),
                                   const SizedBox(width: 16),
-                                  Text(
-                                    'Add New Vault Item',
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                      fontFamily: 'seouge-ui',
+                                  Expanded(
+                                    child: Text(
+                                      'Add New Item',
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: theme.colorScheme.onSurface,
+                                        fontFamily: 'seouge-ui',
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -131,34 +156,55 @@ class _VaultScreenState extends State<VaultScreen> {
                                 controller: titleCtrl,
                                 label: 'Title',
                                 icon: Icons.title,
+                                theme: theme,
                               ),
                               const SizedBox(height: 20),
                               _buildTextField(
                                 controller: userCtrl,
                                 label: 'Username',
                                 icon: Icons.person,
+                                theme: theme,
                               ),
                               const SizedBox(height: 20),
                               _buildTextField(
                                 controller: urlCtrl,
                                 label: 'URL',
                                 icon: Icons.language,
+                                theme: theme,
                               ),
                               const SizedBox(height: 20),
                               _buildTextField(
                                 controller: passCtrl,
                                 label: 'Password',
                                 icon: Icons.lock,
+                                theme: theme,
                                 obscureText: obscure,
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    obscure ? Icons.visibility_off : Icons.visibility,
-                                    size: 20,
-                                  ),
-                                  color: Colors.white54,
-                                  onPressed: () {
-                                    setStateSB(() => obscure = !obscure);
-                                  },
+                                suffixIcon: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      tooltip: 'Generate password',
+                                      icon: Icon(
+                                        Icons.auto_fix_high,
+                                        size: 20,
+                                        color: theme.colorScheme.primary,
+                                      ),
+                                      onPressed: () => _openPasswordGenerator(
+                                        passCtrl,
+                                        () => setStateSB(() {}),
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: Icon(
+                                        obscure ? Icons.visibility_off : Icons.visibility,
+                                        size: 20,
+                                      ),
+                                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                      onPressed: () {
+                                        setStateSB(() => obscure = !obscure);
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ),
                               const SizedBox(height: 20),
@@ -166,6 +212,7 @@ class _VaultScreenState extends State<VaultScreen> {
                                 controller: notesCtrl,
                                 label: 'Notes',
                                 icon: Icons.notes,
+                                theme: theme,
                                 maxLines: 3,
                               ),
                               const SizedBox(height: 26),
@@ -181,7 +228,7 @@ class _VaultScreenState extends State<VaultScreen> {
                                           borderRadius: BorderRadius.circular(16),
                                         ),
                                         side: BorderSide(
-                                          color: Colors.white.withOpacity(0.3),
+                                          color: theme.colorScheme.onSurface.withOpacity(0.3),
                                           width: 1.5,
                                         ),
                                       ),
@@ -190,7 +237,7 @@ class _VaultScreenState extends State<VaultScreen> {
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
-                                          color: Colors.white,
+                                          color: theme.colorScheme.onSurface,
                                           fontFamily: 'seouge-ui',
                                         ),
                                       ),
@@ -198,23 +245,34 @@ class _VaultScreenState extends State<VaultScreen> {
                                   ),
                                   const SizedBox(width: 16),
                                   Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: () => Navigator.of(ctx).pop(true),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.white,
-                                        padding: const EdgeInsets.symmetric(vertical: 16),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(16),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            theme.colorScheme.primary,
+                                            theme.colorScheme.secondary,
+                                          ],
                                         ),
-                                        elevation: 0,
+                                        borderRadius: BorderRadius.circular(16),
                                       ),
-                                      child: Text(
-                                        'Save to Vault',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.black,
-                                          fontFamily: 'seouge-ui',
+                                      child: ElevatedButton(
+                                        onPressed: () => Navigator.of(ctx).pop(true),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.transparent,
+                                          shadowColor: Colors.transparent,
+                                          padding: const EdgeInsets.symmetric(vertical: 16),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(16),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Save to Vault',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                            color: Colors.white,
+                                            fontFamily: 'seouge-ui',
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -312,6 +370,7 @@ class _VaultScreenState extends State<VaultScreen> {
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
+    required ThemeData theme,
     IconData? icon,
     bool obscureText = false,
     Widget? suffixIcon,
@@ -322,27 +381,27 @@ class _VaultScreenState extends State<VaultScreen> {
       obscureText: obscureText,
       maxLines: maxLines,
       minLines: maxLines == 1 ? 1 : null,
-      style: const TextStyle(
-        color: Colors.white,
+      style: TextStyle(
+        color: theme.colorScheme.onSurface,
         fontSize: 16,
         fontFamily: 'seouge-ui',
       ),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(
-          color: Colors.white70,
+        labelStyle: TextStyle(
+          color: theme.colorScheme.onSurface.withOpacity(0.6),
           fontWeight: FontWeight.w500,
           fontFamily: 'seouge-ui',
         ),
         prefixIcon: icon != null
             ? Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Icon(icon, color: Colors.white60, size: 22),
+                child: Icon(icon, color: theme.colorScheme.primary, size: 22),
               )
             : null,
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: Colors.white.withOpacity(0.08),
+        fillColor: theme.colorScheme.primary.withOpacity(0.05),
         contentPadding: const EdgeInsets.symmetric(
           vertical: 18,
           horizontal: 16,
@@ -354,13 +413,13 @@ class _VaultScreenState extends State<VaultScreen> {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(
-            color: Colors.white.withOpacity(0.2),
+            color: theme.colorScheme.primary.withOpacity(0.2),
             width: 1.5,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Colors.white, width: 2),
+          borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
         ),
       ),
     );
@@ -368,26 +427,49 @@ class _VaultScreenState extends State<VaultScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+        backgroundColor: theme.scaffoldBackgroundColor,
+        foregroundColor: theme.colorScheme.onSurface,
         centerTitle: true,
         elevation: 0,
-        title: Text(
-          'Vault',
-          style: TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontFamily: 'seouge-ui',
-          ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.security, color: theme.colorScheme.primary, size: 28),
+            const SizedBox(width: 12),
+            ShaderMask(
+              shaderCallback: (bounds) => LinearGradient(
+                colors: [
+                  theme.colorScheme.primary,
+                  theme.colorScheme.secondary,
+                ],
+              ).createShader(bounds),
+              child: Text(
+                'Vault',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  fontFamily: 'seouge-ui',
+                ),
+              ),
+            ),
+          ],
         ),
         actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: ThemeSwitcher(showLabel: false),
+          ),
+          const SizedBox(width: 8),
           IconButton(
             tooltip: 'Logout',
-            icon: const Icon(Icons.logout, color: Colors.white),
+            icon: Icon(Icons.logout, color: theme.colorScheme.error),
             onPressed: () async {
               await ApiClient().clearToken();
               if (!mounted) return;
@@ -400,9 +482,9 @@ class _VaultScreenState extends State<VaultScreen> {
         ],
       ),
       body: _loading
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
                 strokeWidth: 3,
               ),
             )
@@ -412,8 +494,8 @@ class _VaultScreenState extends State<VaultScreen> {
                 padding: const EdgeInsets.all(32),
                 child: Text(
                   _error!,
-                  style: const TextStyle(
-                    color: Colors.white70,
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface.withOpacity(0.7),
                     fontSize: 18,
                     fontFamily: 'seouge-ui',
                   ),
@@ -421,96 +503,140 @@ class _VaultScreenState extends State<VaultScreen> {
                 ),
               ),
             )
+          : _items.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.lock_outline,
+                    size: 80,
+                    color: theme.colorScheme.primary.withOpacity(0.3),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Your vault is empty',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                      fontFamily: 'seouge-ui',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Add your first password',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      fontFamily: 'seouge-ui',
+                    ),
+                  ),
+                ],
+              ),
+            )
           : RefreshIndicator(
               onRefresh: _loadItems,
-              color: Colors.white,
+              color: theme.colorScheme.primary,
               child: ListView.separated(
-                padding: const EdgeInsets.symmetric(vertical: 20),
+                padding: const EdgeInsets.all(20),
                 physics: const AlwaysScrollableScrollPhysics(),
                 itemCount: _items.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 16),
                 itemBuilder: (ctx, i) {
                   final it = _items[i];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(18),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(18),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.12),
-                              width: 1.2,
+                  return Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: LinearGradient(
+                        colors: [
+                          theme.colorScheme.primary.withOpacity(0.05),
+                          theme.colorScheme.secondary.withOpacity(0.05),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.colorScheme.primary.withOpacity(0.1),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surface,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: theme.colorScheme.primary.withOpacity(0.1),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 16,
+                            horizontal: 20,
+                          ),
+                          leading: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  theme.colorScheme.primary,
+                                  theme.colorScheme.secondary,
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              Icons.vpn_key,
+                              color: Colors.white,
+                              size: 24,
                             ),
                           ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 20,
+                          title: Text(
+                            it['title'] ?? '',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.onSurface,
+                              fontFamily: 'seouge-ui',
                             ),
-                            title: Text(
-                              it['title'] ?? '',
-                              style: const TextStyle(
-                                fontSize: 19,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontFamily: 'seouge-ui',
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          subtitle: Text(
+                            it['username'] ?? '',
+                            style: TextStyle(
+                              color: theme.colorScheme.onSurface.withOpacity(0.6),
+                              fontFamily: 'seouge-ui',
+                              fontSize: 14,
                             ),
-                            subtitle: Text(
-                              it['username'] ?? '',
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontFamily: 'seouge-ui',
-                                fontSize: 16,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  tooltip: 'Copy password',
-                                  icon: const Icon(Icons.copy, size: 24),
-                                  color: Colors.white,
-                                  onPressed: () async {
-                                    final pw = (it['password'] ?? '')
-                                        .toString();
-                                    if (pw.isEmpty) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: const Text(
-                                            'No password available',
-                                          ),
-                                          backgroundColor: Colors.black,
-                                          behavior: SnackBarBehavior.floating,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    await Clipboard.setData(
-                                      ClipboardData(text: pw),
-                                    );
-                                    if (!mounted) return;
-                                    ScaffoldMessenger.of(context).showSnackBar(
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                tooltip: 'Copy password',
+                                icon: const Icon(Icons.copy, size: 22),
+                                color: theme.colorScheme.primary,
+                                onPressed: () async {
+                                  final pw = (it['password'] ?? '')
+                                      .toString();
+                                  if (pw.isEmpty) {
+                                    ScaffoldMessenger.of(
+                                      context,
+                                    ).showSnackBar(
                                       SnackBar(
                                         content: const Text(
-                                          'Password copied to clipboard',
+                                          'No password available',
                                         ),
-                                        backgroundColor: Colors.black,
+                                        backgroundColor: theme.colorScheme.surface,
                                         behavior: SnackBarBehavior.floating,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
@@ -519,16 +645,35 @@ class _VaultScreenState extends State<VaultScreen> {
                                         ),
                                       ),
                                     );
-                                  },
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete, size: 24),
-                                  color: Colors.redAccent,
-                                  onPressed: () =>
-                                      _deleteItem((it['id'] as num).toInt()),
-                                ),
-                              ],
-                            ),
+                                    return;
+                                  }
+                                  await Clipboard.setData(
+                                    ClipboardData(text: pw),
+                                  );
+                                  if (!mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: const Text(
+                                        'Password copied to clipboard',
+                                      ),
+                                      backgroundColor: theme.colorScheme.surface,
+                                      behavior: SnackBarBehavior.floating,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          12,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete, size: 22),
+                                color: theme.colorScheme.error,
+                                onPressed: () =>
+                                    _deleteItem((it['id'] as num).toInt()),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -537,11 +682,29 @@ class _VaultScreenState extends State<VaultScreen> {
                 },
               ),
             ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.white,
-        onPressed: _addItemDialog,
-        elevation: 6,
-        child: const Icon(Icons.add, color: Colors.black, size: 32),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            colors: [
+              theme.colorScheme.primary,
+              theme.colorScheme.secondary,
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: theme.colorScheme.primary.withOpacity(0.4),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: FloatingActionButton(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          onPressed: _addItemDialog,
+          child: const Icon(Icons.add, color: Colors.white, size: 32),
+        ),
       ),
     );
   }

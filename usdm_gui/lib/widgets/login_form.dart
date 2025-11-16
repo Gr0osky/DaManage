@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:usdm_gui/services/api_client.dart';
+import 'package:usdm_gui/services/session_manager.dart';
 import 'package:usdm_gui/screens/vault_screen.dart';
 
 class LoginForm extends StatefulWidget {
@@ -15,83 +14,138 @@ class _LoginFormState extends State<LoginForm> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  int? _attemptsLeft;
+  final _sessionManager = SessionManager();
+  late final VoidCallback _sessionListener;
+  bool _biometricEnabled = false;
+  bool _biometricToggleBusy = false;
+
+  @override
+  void dispose() {
+    _sessionManager.removeListener(_sessionListener);
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _biometricEnabled = _sessionManager.isBiometricEnabled;
+    _sessionListener = () {
+      setState(() {
+        _biometricEnabled = _sessionManager.isBiometricEnabled;
+      });
+    };
+    _sessionManager.addListener(_sessionListener);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // USERNAME FIELD
-        TextField(
-          style: const TextStyle(
-            color: Colors.white,
-            fontFamily: 'seouge-ui',
-            fontSize: 35,
-            fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.center,
-          controller: _usernameController,
-          decoration: InputDecoration(
-            floatingLabelBehavior: FloatingLabelBehavior.never,
-            label: Align(
-              alignment: Alignment.center,
-              child: Text(
-                'Username',
-                style: const TextStyle(
-                  color: Colors.white60,
-                  fontSize: 35,
-                  fontWeight: FontWeight.w600,
-                ),
+        // Failed Attempts Warning
+        if (_attemptsLeft != null && _attemptsLeft! > 0) ...[
+          Container(
+            padding: const EdgeInsets.all(12),
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.orange.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.orange,
+                width: 1.5,
               ),
             ),
-
-            prefixIcon: const Icon(
-              Icons.person,
-              color: Color.fromARGB(255, 128, 203, 196),
-              size: 60,
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.orange,
+                  size: 24,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Warning: $_attemptsLeft attempt${_attemptsLeft! > 1 ? 's' : ''} remaining before account lockout',
+                    style: TextStyle(
+                      color: Colors.orange.shade800,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ],
+
+        // USERNAME FIELD
+        TextField(
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
+            fontFamily: 'seouge-ui',
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+          ),
+          controller: _usernameController,
+          decoration: InputDecoration(
+            labelText: 'Username',
+            labelStyle: TextStyle(
+              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              fontSize: 16,
+            ),
+            prefixIcon: Icon(
+              Icons.person,
+              color: theme.colorScheme.primary,
+              size: 24,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
             filled: true,
-            fillColor: Colors.black.withOpacity(0.7),
+            fillColor: theme.colorScheme.primary.withOpacity(0.05),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(
+                color: theme.colorScheme.primary.withOpacity(0.2),
+                width: 1.5,
+              ),
+            ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: const BorderSide(color: Colors.blueGrey, width: 2),
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
             ),
           ),
         ),
 
-        const SizedBox(height: 50),
+        const SizedBox(height: 24),
 
         // Password Field
         TextField(
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
             fontFamily: 'seouge-ui',
-            fontSize: 35,
-            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
           ),
-          textAlign: TextAlign.center,
           controller: _passwordController,
           obscureText: _obscurePassword,
           decoration: InputDecoration(
-            floatingLabelBehavior: FloatingLabelBehavior.never,
-            label: Align(
-              alignment: Alignment.center,
-              child: Text(
-                'Password',
-                style: const TextStyle(
-                  color: Colors.white60,
-                  fontSize: 35,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+            labelText: 'Password',
+            labelStyle: TextStyle(
+              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              fontSize: 16,
             ),
-
-            prefixIcon: const Icon(
+            prefixIcon: Icon(
               Icons.lock_outline,
-              color: Color.fromARGB(255, 128, 203, 196),
-              size: 60,
+              color: theme.colorScheme.primary,
+              size: 24,
             ),
-
             suffixIcon: IconButton(
               onPressed: () {
                 setState(() {
@@ -99,100 +153,266 @@ class _LoginFormState extends State<LoginForm> {
                 });
               },
               icon: Icon(
-                _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                color: const Color.fromARGB(255, 128, 203, 196),
-                size: 45,
+                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                color: theme.colorScheme.primary,
+                size: 22,
               ),
             ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
             filled: true,
-            fillColor: Colors.black.withOpacity(0.7),
+            fillColor: theme.colorScheme.primary.withOpacity(0.05),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(
+                color: theme.colorScheme.primary.withOpacity(0.2),
+                width: 1.5,
+              ),
+            ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: const BorderSide(color: Colors.blueGrey, width: 2),
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
             ),
           ),
         ),
 
         const SizedBox(height: 50),
 
-        ElevatedButton(
-          onPressed: () async {
-            String username = _usernameController.text.trim();
-            String password = _passwordController.text.trim();
-            if (username.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Username is required")),
-              );
-              return;
-            }
-            if (password.isEmpty || password.length < 5) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("PAssword must be atleast 5 characeters long"),
-                  backgroundColor: Colors.red,
-                ),
-              );
-              return;
-            }
-            try {
-              await ApiClient().login(username, password);
-              if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Login succesfull!"),
-                  backgroundColor: Colors.green,
-                ),
-              );
-              _usernameController.clear();
-              _passwordController.clear();
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const VaultScreen()),
-              );
-            } catch (e) {
-              if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
-              );
-            }
-          },
-          style: ButtonStyle(
-            backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-              if (states.contains(WidgetState.hovered)) {
-                return Colors.black.withOpacity(0.9);
-              }
-              return Colors.black;
-            }),
-            shape: WidgetStateProperty.resolveWith<RoundedRectangleBorder>((
-              states,
-            ) {
-              return RoundedRectangleBorder(
-                borderRadius: BorderRadiusGeometry.circular(
-                  states.contains(WidgetState.hovered) ? 30 : 20,
-                ),
-                side: BorderSide(
-                  color: states.contains(WidgetState.hovered)
-                      ? Colors.white70
-                      : Colors.transparent,
-                  width: 2,
-                ),
-              );
-            }),
-            padding: WidgetStateProperty.all(
-              const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
+        Row(
+          children: [
+            Switch(
+              value: _biometricEnabled,
+              onChanged: _biometricToggleBusy ? null : _handleBiometricToggle,
             ),
-            elevation: WidgetStateProperty.all(6),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Unlock with biometrics',
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            if (_biometricToggleBusy)
+              SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                theme.colorScheme.primary,
+                theme.colorScheme.secondary,
+              ],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: theme.colorScheme.primary.withOpacity(0.4),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
-          child: const Text(
-            "Login",
-            style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'seouge-ui',
-              fontSize: 35,
+          child: ElevatedButton(
+            onPressed: () async {
+              final username = _usernameController.text.trim();
+              final password = _passwordController.text.trim();
+
+              if (username.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Username is required'),
+                    backgroundColor: theme.colorScheme.error,
+                  ),
+                );
+                return;
+              }
+
+              if (password.isEmpty || password.length < 5) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Password must be at least 5 characters long'),
+                    backgroundColor: theme.colorScheme.error,
+                  ),
+                );
+                return;
+              }
+
+              try {
+                final token = await ApiClient().login(username, password);
+                await SessionManager().startSession(token);
+                if (!context.mounted) return;
+
+                // Clear attempts counter on successful login
+                setState(() {
+                  _attemptsLeft = null;
+                });
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Login successful!'),
+                    backgroundColor: theme.colorScheme.secondary,
+                  ),
+                );
+                _usernameController.clear();
+                _passwordController.clear();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const VaultScreen()),
+                );
+              } catch (e) {
+                if (!context.mounted) return;
+
+                // Parse error message for attempts left
+                final errorMessage = e.toString();
+                if (errorMessage.contains('attemptsLeft')) {
+                  try {
+                    final match = RegExp(r'attemptsLeft[":\s]+(\d+)')
+                        .firstMatch(errorMessage);
+                    if (match != null) {
+                      setState(() {
+                        _attemptsLeft = int.parse(match.group(1)!);
+                      });
+                    }
+                  } catch (_) {}
+                }
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(errorMessage),
+                    backgroundColor: theme.colorScheme.error,
+                    duration: const Duration(seconds: 4),
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              padding: const EdgeInsets.symmetric(vertical: 18),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            child: const Text(
+              'Login',
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'seouge-ui',
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
+        const SizedBox(height: 16),
+        if (_sessionManager.hasStoredSession &&
+            _sessionManager.isLocked &&
+            _sessionManager.isBiometricEnabled) ...[
+          OutlinedButton.icon(
+            onPressed: _attemptBiometricUnlock,
+            icon: Icon(
+              Icons.fingerprint,
+              color: theme.colorScheme.primary,
+            ),
+            label: const Text('Unlock with biometrics'),
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: theme.colorScheme.primary),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            ),
+          ),
+        ],
       ],
     );
+  }
+
+  Future<void> _attemptBiometricUnlock() async {
+    if (!_sessionManager.hasStoredSession || !_sessionManager.isLocked) return;
+    final theme = Theme.of(context);
+
+    try {
+      final success = await _sessionManager.unlockSession();
+      if (!success) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Biometric authentication failed'),
+            backgroundColor: theme.colorScheme.error,
+          ),
+        );
+        return;
+      }
+
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Vault unlocked'),
+          backgroundColor: theme.colorScheme.secondary,
+        ),
+      );
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const VaultScreen()),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: theme.colorScheme.error,
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleBiometricToggle(bool value) async {
+    setState(() {
+      _biometricToggleBusy = true;
+    });
+    try {
+      await _sessionManager.setBiometricEnabled(value);
+      setState(() {
+        _biometricEnabled = value;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            value
+                ? 'Biometric unlock enabled'
+                : 'Biometric unlock disabled',
+          ),
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+        ),
+      );
+    } catch (e) {
+      setState(() {
+        _biometricEnabled = _sessionManager.isBiometricEnabled;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    } finally {
+      setState(() {
+        _biometricToggleBusy = false;
+      });
+    }
   }
 }

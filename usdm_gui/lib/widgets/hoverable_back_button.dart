@@ -19,6 +19,8 @@ class _HoverableBackButtonState extends State<HoverableBackButton> {
   double _scale = 1.0;
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return MouseRegion(
       onEnter: (_) => setState(() {
         _scale = widget.hoverScale;
@@ -27,17 +29,35 @@ class _HoverableBackButtonState extends State<HoverableBackButton> {
         _scale = 1;
       }),
 
-      child: Transform.scale(
+      child: AnimatedScale(
         scale: _scale,
+        duration: const Duration(milliseconds: 200),
         child: SizedBox.fromSize(
           size: Size.square(widget.size),
-          child: FloatingActionButton(
-            onPressed: widget.onPressed,
-            backgroundColor: Colors.black,
-            foregroundColor: Colors.white,
-            shape: const CircleBorder(),
-            mini: true,
-            child: const Icon(Icons.arrow_back, size: 24),
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: theme.colorScheme.primary.withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: FloatingActionButton(
+              onPressed: widget.onPressed,
+              backgroundColor: theme.colorScheme.surface,
+              foregroundColor: theme.colorScheme.onSurface,
+              shape: CircleBorder(
+                side: BorderSide(
+                  color: theme.colorScheme.primary.withOpacity(0.3),
+                  width: 2,
+                ),
+              ),
+              mini: true,
+              child: const Icon(Icons.arrow_back, size: 24),
+            ),
           ),
         ),
       ),

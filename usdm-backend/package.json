@@ -2,10 +2,12 @@
   "name": "usdm-backend",
   "version": "1.0.0",
   "main": "server.js",
+  "bin": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "build:exe": "pkg --compress Brotli --targets node18-win-x64 --output dist/backend.exe ."
   },
   "keywords": [],
   "author": "",
@@ -16,10 +18,23 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.10.0"
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7",
+    "xss-clean": "^0.1.4"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"
+    "nodemon": "^3.1.4",
+    "pkg": "^5.8.1"
+  },
+  "pkg": {
+    "assets": [
+      "schema.sql",
+      "node_modules/sqlite3/lib/binding/**/node_sqlite3.node",
+      "node_modules/bcrypt/lib/binding/**/*.node"
+    ]
   }
 }

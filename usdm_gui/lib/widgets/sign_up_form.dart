@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:usdm_gui/services/api_client.dart';
 import 'package:usdm_gui/screens/login_screen.dart';
+import 'package:usdm_gui/services/password_validator.dart';
+import 'package:usdm_gui/widgets/password_generator.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
@@ -14,186 +16,470 @@ class SignUpForm extends StatefulWidget {
 class _SignUpFormState extends State<SignUpForm> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+  PasswordValidationResult? _passwordValidation;
+  
+  @override
+  void initState() {
+    super.initState();
+    _passwordController.addListener(_validatePassword);
+  }
+  
+  void _validatePassword() {
+    setState(() {
+      if (_passwordController.text.isNotEmpty) {
+        _passwordValidation = PasswordValidator.validate(_passwordController.text);
+      } else {
+        _passwordValidation = null;
+      }
+    });
+  }
+
+  Future<void> _openPasswordGenerator(TextEditingController targetController) async {
+    final password = await showDialog<String>(
+      context: context,
+      builder: (ctx) => PasswordGenerator(
+        onPasswordGenerated: (_) {},
+        // We only need the returned value from Navigator
+      ),
+      barrierDismissible: true,
+    );
+
+    if (password == null || password.isEmpty) return;
+
+    targetController.text = password;
+    _validatePassword();
+  }
+  
+  @override
+  void dispose() {
+    _passwordController.removeListener(_validatePassword);
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+  
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // USERNAME FIELD
         TextField(
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
             fontFamily: 'seouge-ui',
-            fontSize: 35,
-            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
           ),
-          textAlign: TextAlign.center,
           controller: _usernameController,
           decoration: InputDecoration(
-            floatingLabelBehavior: FloatingLabelBehavior.never,
-            label: Align(
-              alignment: Alignment.center,
-              child: Text(
-                'Username',
-                style: const TextStyle(
-                  color: Colors.white60,
-                  fontSize: 35,
-                  fontWeight: FontWeight.w600,
-                ),
+            labelText: 'Username',
+            labelStyle: TextStyle(
+              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              fontSize: 16,
+            ),
+            prefixIcon: Icon(
+              Icons.person,
+              color: theme.colorScheme.secondary,
+              size: 24,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: theme.colorScheme.secondary.withOpacity(0.05),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(
+                color: theme.colorScheme.secondary.withOpacity(0.2),
+                width: 1.5,
               ),
             ),
-
-            prefixIcon: const Icon(
-              Icons.person,
-              color: Color.fromARGB(255, 128, 203, 196),
-              size: 60,
-            ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            filled: true,
-            fillColor: Colors.black.withOpacity(0.7),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: const BorderSide(color: Colors.blueGrey, width: 2),
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: theme.colorScheme.secondary, width: 2),
             ),
           ),
         ),
 
-        const SizedBox(height: 50),
+        const SizedBox(height: 24),
 
-        // Password Field
+        // Password Field with Strength Indicator
         TextField(
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
             fontFamily: 'seouge-ui',
-            fontSize: 35,
-            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
           ),
-          textAlign: TextAlign.center,
           controller: _passwordController,
           obscureText: _obscurePassword,
           decoration: InputDecoration(
-            floatingLabelBehavior: FloatingLabelBehavior.never,
-            label: Align(
-              alignment: Alignment.center,
-              child: Text(
-                'Password',
-                style: const TextStyle(
-                  color: Colors.white60,
-                  fontSize: 35,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+            labelText: 'Password',
+            labelStyle: TextStyle(
+              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              fontSize: 16,
             ),
-
-            prefixIcon: const Icon(
+            prefixIcon: Icon(
               Icons.lock_outline,
-              color: Color.fromARGB(255, 128, 203, 196),
-              size: 60,
+              color: theme.colorScheme.secondary,
+              size: 24,
             ),
-
-            suffixIcon: IconButton(
-              onPressed: () {
-                setState(() {
-                  _obscurePassword = !_obscurePassword;
-                });
-              },
-              icon: Icon(
-                _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                color: const Color.fromARGB(255, 128, 203, 196),
-                size: 45,
+            suffixIcon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  tooltip: 'Generate password',
+                  onPressed: () => _openPasswordGenerator(_passwordController),
+                  icon: Icon(
+                    Icons.auto_fix_high,
+                    color: theme.colorScheme.secondary,
+                    size: 22,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                    color: theme.colorScheme.secondary,
+                    size: 22,
+                  ),
+                ),
+              ],
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: theme.colorScheme.secondary.withOpacity(0.05),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(
+                color: theme.colorScheme.secondary.withOpacity(0.2),
+                width: 1.5,
               ),
             ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            filled: true,
-            fillColor: Colors.black.withOpacity(0.7),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: const BorderSide(color: Colors.blueGrey, width: 2),
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: theme.colorScheme.secondary, width: 2),
             ),
           ),
         ),
 
-        const SizedBox(height: 50),
+        // Password Strength Indicator
+        if (_passwordValidation != null) ...[
+          const SizedBox(height: 12),
+          _buildPasswordStrengthIndicator(),
+          const SizedBox(height: 8),
+          if (_passwordValidation!.suggestions.isNotEmpty)
+            _buildPasswordSuggestions(),
+        ],
 
-        ElevatedButton(
-          onPressed: () async {
-            String username = _usernameController.text.trim();
-            String password = _passwordController.text.trim();
-            if (username.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Username is required")),
-              );
-              return;
-            }
-            if (password.isEmpty || password.length < 5) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("PAssword must be atleast 5 characeters long"),
-                  backgroundColor: Colors.red,
-                ),
-              );
-              return;
-            }
-            try {
-              await ApiClient().signup(username, password);
-              if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Account created successfully!"),
-                  backgroundColor: Colors.green,
-                ),
-              );
-              _usernameController.clear();
-              _passwordController.clear();
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-              );
-            } catch (e) {
-              if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
-              );
-            }
-          },
+        const SizedBox(height: 24),
 
-          style: ButtonStyle(
-            backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-              if (states.contains(WidgetState.hovered)) {
-                return Colors.black.withOpacity(0.9);
-              }
-              return Colors.black;
-            }),
-            shape: WidgetStateProperty.resolveWith<RoundedRectangleBorder>((
-              states,
-            ) {
-              return RoundedRectangleBorder(
-                borderRadius: BorderRadiusGeometry.circular(
-                  states.contains(WidgetState.hovered) ? 30 : 20,
-                ),
-                side: BorderSide(
-                  color: states.contains(WidgetState.hovered)
-                      ? Colors.white70
-                      : Colors.transparent,
-                  width: 2,
-                ),
-              );
-            }),
-            padding: WidgetStateProperty.all(
-              const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
-            ),
-            elevation: WidgetStateProperty.all(6),
+        // Confirm Password Field
+        TextField(
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
+            fontFamily: 'seouge-ui',
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
           ),
-          child: const Text(
-            "SignUp",
-            style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'seouge-ui',
-              fontSize: 35,
+          controller: _confirmPasswordController,
+          obscureText: _obscureConfirmPassword,
+          decoration: InputDecoration(
+            labelText: 'Confirm Password',
+            labelStyle: TextStyle(
+              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              fontSize: 16,
+            ),
+            prefixIcon: Icon(
+              Icons.lock_outline,
+              color: theme.colorScheme.secondary,
+              size: 24,
+            ),
+            suffixIcon: IconButton(
+              onPressed: () {
+                setState(() {
+                  _obscureConfirmPassword = !_obscureConfirmPassword;
+                });
+              },
+              icon: Icon(
+                _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                color: theme.colorScheme.secondary,
+                size: 22,
+              ),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: theme.colorScheme.secondary.withOpacity(0.05),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(
+                color: theme.colorScheme.secondary.withOpacity(0.2),
+                width: 1.5,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: theme.colorScheme.secondary, width: 2),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 30),
+
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                theme.colorScheme.secondary,
+                theme.colorScheme.primary,
+              ],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: theme.colorScheme.secondary.withOpacity(0.4),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: ElevatedButton(
+            onPressed: () async {
+              String username = _usernameController.text.trim();
+              String password = _passwordController.text;
+              String confirmPassword = _confirmPasswordController.text;
+              
+              // Username validation
+              if (username.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text("Username is required"),
+                    backgroundColor: theme.colorScheme.error,
+                  ),
+                );
+                return;
+              }
+              
+              if (username.length < 3) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text("Username must be at least 3 characters long"),
+                    backgroundColor: theme.colorScheme.error,
+                  ),
+                );
+                return;
+              }
+              
+              // Password validation
+              if (password.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text("Password is required"),
+                    backgroundColor: theme.colorScheme.error,
+                  ),
+                );
+                return;
+              }
+              
+              final validation = PasswordValidator.validate(password);
+              if (!validation.isValid) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(validation.errors.join('\n')),
+                    backgroundColor: theme.colorScheme.error,
+                    duration: const Duration(seconds: 4),
+                  ),
+                );
+                return;
+              }
+              
+              // Confirm password validation
+              if (password != confirmPassword) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text("Passwords do not match"),
+                    backgroundColor: theme.colorScheme.error,
+                  ),
+                );
+                return;
+              }
+              try {
+                await ApiClient().signup(username, password);
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text("Account created successfully!"),
+                    backgroundColor: theme.colorScheme.secondary,
+                  ),
+                );
+                _usernameController.clear();
+                _passwordController.clear();
+                _confirmPasswordController.clear();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                );
+              } catch (e) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(e.toString()),
+                    backgroundColor: theme.colorScheme.error,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              padding: const EdgeInsets.symmetric(vertical: 18),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            child: const Text(
+              "Sign Up",
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'seouge-ui',
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  /// Build password strength indicator widget
+  Widget _buildPasswordStrengthIndicator() {
+    final theme = Theme.of(context);
+    final validation = _passwordValidation!;
+    
+    Color strengthColor;
+    String strengthText;
+    
+    switch (validation.strength) {
+      case PasswordStrength.weak:
+        strengthColor = Colors.red;
+        strengthText = 'Weak';
+        break;
+      case PasswordStrength.fair:
+        strengthColor = Colors.orange;
+        strengthText = 'Fair';
+        break;
+      case PasswordStrength.good:
+        strengthColor = Colors.yellow.shade700;
+        strengthText = 'Good';
+        break;
+      case PasswordStrength.strong:
+        strengthColor = Colors.lightGreen;
+        strengthText = 'Strong';
+        break;
+      case PasswordStrength.veryStrong:
+        strengthColor = Colors.green;
+        strengthText = 'Very Strong';
+        break;
+    }
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: validation.score / 100,
+                  minHeight: 8,
+                  backgroundColor: theme.colorScheme.onSurface.withOpacity(0.1),
+                  valueColor: AlwaysStoppedAnimation<Color>(strengthColor),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              strengthText,
+              style: TextStyle(
+                color: strengthColor,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  /// Build password suggestions widget
+  Widget _buildPasswordSuggestions() {
+    final theme = Theme.of(context);
+    final suggestions = _passwordValidation!.suggestions;
+    
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: theme.colorScheme.primary.withOpacity(0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.lightbulb_outline,
+                size: 16,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'Suggestions:',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          ...suggestions.map((suggestion) => Padding(
+            padding: const EdgeInsets.only(left: 22, top: 4),
+            child: Text(
+              '• $suggestion',
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurface.withOpacity(0.7),
+              ),
+            ),
+          )),
+        ],
+      ),
     );
   }
 }

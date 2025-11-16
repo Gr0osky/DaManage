@@ -8,51 +8,68 @@ class SignUpButton extends StatefulWidget {
   State<SignUpButton> createState() => _SignUpButtonState();
 }
 
-class _SignUpButtonState extends State<SignUpButton> {
+class _SignUpButtonState extends State<SignUpButton> with SingleTickerProviderStateMixin {
+  bool _isHovered = false;
+
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const SignUpScreen()),
-        );
-      },
-      style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-          return states.contains(WidgetState.hovered)
-              ? Colors.black.withOpacity(0.9)
-              : Colors.black;
-        }),
-        shape: WidgetStateProperty.resolveWith<RoundedRectangleBorder>((
-          states,
-        ) {
-          return RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(
-              states.contains(WidgetState.hovered) ? 30 : 20,
+    final theme = Theme.of(context);
+    
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        transform: Matrix4.identity()..scale(_isHovered ? 1.03 : 1.0),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: theme.colorScheme.secondary.withOpacity(_isHovered ? 0.4 : 0.2),
+                blurRadius: _isHovered ? 20 : 12,
+                offset: Offset(0, _isHovered ? 8 : 4),
+              ),
+            ],
+          ),
+          child: OutlinedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SignUpScreen()),
+              );
+            },
+            style: OutlinedButton.styleFrom(
+              foregroundColor: theme.colorScheme.onSurface,
+              padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 24),
+              side: BorderSide(
+                color: _isHovered 
+                    ? theme.colorScheme.secondary 
+                    : theme.colorScheme.onSurface.withOpacity(0.3),
+                width: 2,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
             ),
-            side: BorderSide(
-              color: states.contains(WidgetState.hovered)
-                  ? Colors.white70
-                  : Colors.transparent,
-              width: 2,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.person_add, size: 28, color: theme.colorScheme.onSurface),
+                const SizedBox(width: 12),
+                Text(
+                  "Sign Up",
+                  style: TextStyle(
+                    fontFamily: 'seouge-ui',
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+              ],
             ),
-          );
-        }),
-        padding: WidgetStateProperty.all(
-          const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
-        ),
-        elevation: WidgetStateProperty.resolveWith<double>((states) {
-          return states.contains(WidgetState.hovered) ? 8 : 6;
-        }),
-      ),
-      child: const Text(
-        "SignUp",
-        style: TextStyle(
-          color: Colors.white,
-          fontFamily: 'seouge-ui',
-          fontSize: 35,
-          fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

@@ -1,151 +1,473 @@
-# DaManage – Password Manager
+<div align="center">
 
-![Status](https://img.shields.io/badge/status-in_progress-blue)
-![Platform](https://img.shields.io/badge/platform-Flutter%20%7C%20Node.js%20%7C%20MySQL-8A2BE2)
-![Security](https://img.shields.io/badge/security-AES--256--GCM%20%7C%20JWT-success)
+# 🔐 DaManage
 
-## Table of Contents
+### *Secure Password Management, Simplified*
 
-- [Architecture](#architecture)
-- [Requirements](#requirements)
-- [Quick Start](#quick-start)
-  - [Backend](#1-backend)
-  - [Frontend (Flutter)](#2-frontend-flutter)
-- [Features](#features)
-- [Security Notes](#security-notes)
-- [Project Structure](#project-structure)
-- [API Overview](#api-overview)
-- [Troubleshooting](#troubleshooting)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
+[![Status](https://img.shields.io/badge/status-in_progress-blue?style=for-the-badge)](https://github.com/Gr0osky/DaManage)
+[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org)
+[![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com)
+[![Security](https://img.shields.io/badge/AES--256--GCM-success?style=for-the-badge)](https://en.wikipedia.org/wiki/Galois/Counter_Mode)
+[![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white)](https://jwt.io)
 
-A cross-platform password manager built with a Flutter frontend and a Node.js/Express backend using MySQL. It supports user signup/login and encrypted storage of vault items.
+<p align="center">
+  <em>A modern, cross-platform password manager built with Flutter and Node.js</em>
+</p>
 
-## Architecture
+[Features](#-features) •
+[Quick Start](#-quick-start) •
+[Architecture](#️-architecture) •
+[Security](#-security) •
+[API](#-api-endpoints) •
+[Contributing](#-contributing)
 
-- **Frontend**: Flutter app in `usdm_gui`
-- **Backend**: Node.js/Express in `usdm-backend`
-- **Database**: MySQL (`usdm_app`)
-- **Auth**: JWT (issued on login)
-- **Vault Security**: AES-256-GCM encryption at rest
+</div>
 
-## Requirements
+---
 
-- Node.js (v18+), npm
-- MySQL 8+
-- Flutter SDK (for desktop/mobile/web)
+## 📋 Table of Contents
 
-## Quick Start
+- [✨ Features](#-features)
+- [🚀 Quick Start](#-quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Backend Setup](#1️⃣-backend-setup)
+  - [Frontend Setup](#2️⃣-frontend-setup)
+- [🏗️ Architecture](#️-architecture)
+- [🔒 Security](#-security)
+- [📦 Project Structure](#-project-structure)
+- [🌐 API Endpoints](#-api-endpoints)
+- [🛠️ Troubleshooting](#️-troubleshooting)
+- [🗺️ Roadmap](#️-roadmap)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
 
-### 1) Backend
+---
 
-1. Create database and tables
-   - Create DB `usdm_app`
-   - Import schema
-     - Windows (PowerShell):
-       - `mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS usdm_app CHARACTER SET utf8mb4;"`
-       - `mysql -u root -p usdm_app < d:\\passManager\\DaManage\\usdm-backend\\schema.sql`
-2. Configure environment
-   - Copy `usdm-backend/.env.example` to `usdm-backend/.env`
-   - Set variables:
-     - `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`
-     - `JWT_SECRET` = long random string
-     - `VAULT_KEY` = 32-byte Base64 key (e.g. `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`)
-3. Install & run
-   - In `usdm-backend`:
-     - `npm install`
-     - Dev: `npm run dev`
-     - Prod: `npm start`
-   - Backend runs at `http://localhost:3000`
+## ✨ Features
 
-### 2) Frontend (Flutter)
+<table>
+<tr>
+<td width="50%">
 
-1. Install deps
-   - In `usdm_gui`: `flutter pub get`
-2. Run
-   - Desktop/Web: `flutter run` (uses `http://localhost:3000`)
-   - Android emulator: `flutter run` (auto-uses `http://10.0.2.2:3000`)
-   - Override base URL if needed:
-     - `flutter run --dart-define=API_BASE_URL=http://<HOST>:3000`
-3. Android internet permission
-   - Ensure `android/app/src/main/AndroidManifest.xml` includes:
-     - `<uses-permission android:name="android.permission.INTERNET" />`
+### 🔐 Security First
+- **AES-256-GCM** encryption for vault items
+- **Bcrypt** password hashing
+- **JWT** authentication
+- Secure key management
 
-## Features
+</td>
+</tr>
+<tr>
+<td width="50%">
 
-- User signup (`/signup`) and login (`/login`)
-- JWT token issuance and auth middleware
-- Vault CRUD endpoints (`/vault`): add, list, update, delete
-- AES‑256‑GCM encryption for stored passwords
-- Flutter UI: Home, Login, Signup, Vault list with add/delete and copy password
+### 🚀 Performance
+- Lightweight Node.js backend
+- Embedded SQLite database (zero external server)
+- Fast encryption/decryption
+- Minimal resource footprint
 
-## Security Notes
+</td>
+<td width="50%">
 
-- User passwords are stored as **bcrypt hashes** (one-way)
-- Vault item passwords are stored as **ciphertext** (AES‑GCM) with a server key
-- Keep `.env` secrets out of source control (see `.gitignore`)
-- Use HTTPS in production; restrict CORS to trusted origins
-- Consider client-side (zero-knowledge) encryption as a future enhancement
+### 📱 Platform Support
+- 🖥️ Windows, macOS, Linux
+- 📱 Android & iOS
+- 🌐 Web (Progressive Web App)
+- ☁️ Cloud-ready architecture
 
-## Project Structure
+</td>
+</tr>
+</table>
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| 🟢 **Node.js** | v18+ | Backend runtime |
+| 📦 **npm** | Latest | Package management |
+| 🎯 **Flutter SDK** | Latest | Frontend framework |
+| 💠 **PowerShell 7+** *(Windows only)* | Latest | Helper scripts |
+
+> 💾 **Database**: The backend now uses an embedded SQLite database. No separate database server is required—the schema is applied automatically on first run.
+
+### 1️⃣ Backend Setup
+
+#### Step 1: Initialize Environment & Database
+
+- **Windows (recommended):** Run the helper script once to generate secrets, configure the environment file under `%LOCALAPPDATA%\DaManage`, and create the SQLite database in the same folder:
+
+  ```powershell
+  pwsh -File .\usdm-backend\Start-Backend.ps1
+  ```
+
+  Subsequent launches will reuse the generated `.env` and database.
+
+- **Cross-platform manual setup:**
+  ```bash
+  cd usdm-backend
+  cp .env.example .env
+  ```
+  Then edit `.env` with your preferred paths and secrets. By default the backend will create `./data/usdm.db` on startup.
+
+#### Step 2: Configure Environment Variables (manual setup)
+
+```env
+# Server
+PORT=3000
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+
+# SQLite Database (choose ONE of the following)
+# Absolute path (recommended for production/Windows helper script)
+DB_PATH=C:\\Users\\you\\AppData\\Local\\DaManage\\usdm.db
+# or relative path inside the repo
+# DB_FILE=./data/usdm.db
+
+# JWT secret (hex) - generated automatically by Start-Backend.ps1 when missing
+JWT_SECRET=your_hex_secret_here
+
+# Vault Encryption Key (Base64 32 bytes)
+VAULT_KEY=your_base64_key_here
+
+# Optional security audit log directory
+# AUDIT_LOG_PATH=C:\\Users\\you\\AppData\\Local\\DaManage\\logs
+```
+
+💡 **Generate secrets manually (if not using the script):**
+
+```bash
+node -e "const crypto=require('crypto');
+console.log('JWT_SECRET=', crypto.randomBytes(32).toString('hex'));
+console.log('VAULT_KEY=', crypto.randomBytes(32).toString('base64'));"
+```
+
+#### Step 3: Install & Run
+
+```bash
+# Install dependencies
+npm install
+
+# Development mode (with auto-reload)
+npm run dev
+
+# Production mode
+npm start
+
+# Windows helper script (auto-loads .env from AppData)
+pwsh -File Start-Backend.ps1
+```
+
+### 2️⃣ Frontend Setup
+
+#### Step 1: Install Dependencies
+
+```bash
+# Navigate to frontend directory
+cd usdm_gui
+
+# Get Flutter dependencies
+flutter pub get
+```
+
+#### Step 2: Run the Application
+
+```bash
+# Desktop (Windows/macOS/Linux)
+flutter run -d windows  # or macos, linux
+
+# Web
+flutter run -d chrome
+
+# Android Emulator
+flutter run -d emulator
+
+# With custom API URL
+flutter run --dart-define=API_BASE_URL=http://your-server:3000
+```
+
+📱 **Android Network Configuration:**
+- Emulator automatically uses `http://10.0.2.2:3000`
+- Physical device requires your computer's LAN IP
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+graph TB
+    subgraph Frontend["🎨 Flutter Frontend"]
+        UI[User Interface]
+        API[API Client]
+        Storage[Local Storage]
+    end
+    
+    subgraph Backend["⚙️ Node.js Backend"]
+        Express[Express Server]
+        Auth[JWT Auth]
+        Crypto[AES-256-GCM]
+    end
+    
+    subgraph Database["💾 SQLite Database"]
+        Users[Users Table]
+        Vault[Vault Items Table]
+    end
+    
+    UI --> API
+    API --> Express
+    Express --> Auth
+    Auth --> Crypto
+    Crypto --> Users
+    Crypto --> Vault
+```
+
+### Tech Stack
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Frontend** | Flutter (Dart) | Cross-platform UI framework |
+| **Backend** | Node.js + Express | RESTful API server |
+| **Database** | SQLite 3 (file-based) | Embedded relational storage |
+| **Authentication** | JWT | Stateless auth tokens |
+| **Encryption** | AES-256-GCM | Vault data encryption |
+| **Password Hashing** | Bcrypt | User password protection |
+
+---
+
+## 🔒 Security
+
+### 🛡️ Security Measures
+
+| Component | Implementation | Description |
+|-----------|----------------|-------------|
+| **User Passwords** | Bcrypt (12 rounds) | One-way hashing, cannot be decrypted |
+| **Vault Items** | AES-256-GCM | Symmetric encryption with server key |
+| **Authentication** | JWT | Signed tokens with expiry |
+| **Transport** | HTTPS (prod) | Encrypted data transmission |
+| **CORS** | Restricted origins | Prevents unauthorized access |
+| **Rate Limiting & Brute Force** | express-rate-limit + custom lockouts | Protects auth endpoints |
+| **Security Auditing** | Structured log files | Tracks sensitive events & suspicious activity |
+
+### ⚠️ Security Best Practices
+
+> **🔐 Keep Your Secrets Safe**
+> - Never commit `.env` files to version control
+> - Use strong, random keys for `JWT_SECRET` and `VAULT_KEY`
+> - Rotate secrets regularly in production
+> - Enable HTTPS for all production deployments
+> - Monitor security audit logs stored under `%LOCALAPPDATA%\DaManage\logs` (or `AUDIT_LOG_PATH`)
+
+
+## 📦 Project Structure
 
 ```
 DaManage/
-├─ usdm-backend/           # Node/Express backend
-│  ├─ server.js            # API and encryption
-│  ├─ package.json         # Dependencies and scripts
-│  ├─ schema.sql           # MySQL schema (users, vault_items)
-│  └─ .env.example         # Env var template
-├─ usdm_gui/               # Flutter frontend
-│  ├─ lib/
-│  │  ├─ screens/          # Home, Login, Signup, Vault
-│  │  └─ services/         # ApiClient (JWT + API calls)
-│  └─ pubspec.yaml
-└─ .gitignore
+│
+├── 📂 usdm-backend/              # Node.js Backend
+│   ├── 📄 server.js              # Main API server
+│   ├── 📄 package.json           # Dependencies & scripts
+│   ├── 📄 Start-Backend.ps1      # Windows helper (env + SQLite setup)
+│   ├── 📄 schema.sql             # Database schema applied automatically
+│   ├── 📄 .env.example           # Environment template
+│   └── 📂 data/                  # Default SQLite location (auto-created)
+│
+├── 📂 usdm_gui/                  # Flutter Frontend
+│   ├── 📂 lib/
+│   │   ├── 📂 screens/           # UI screens
+│   │   │   ├── home_screen.dart
+│   │   │   ├── login_screen.dart
+│   │   │   ├── signup_screen.dart
+│   │   │   └── vault_screen.dart
+│   │   ├── 📂 services/          # API & business logic
+│   │   │   └── api_client.dart
+│   │   └── 📂 widgets/           # Reusable components
+│   ├── 📄 pubspec.yaml           # Flutter dependencies
+│   └── 📂 android/ios/web/       # Platform-specific code
+│
+├── 📂 installer/                 # Distribution packages
+│   └── 🔧 DaManage.iss           # Inno Setup script
+│
+├── 📄 README.md                  # This file
+├── 📄 .gitignore                 # Git ignore rules
+└── 📄 Start-DaManage.ps1         # Launches backend & packaged Flutter app
+
 ```
 
-## API Overview
+---
 
-- `POST /signup` → { message }
-- `POST /login` → { message, token }
-- `POST /vault` (auth) → { message }
-- `GET /vault` (auth) → [ { id, title, username, url, password, notes, ... } ]
-- `PUT /vault/:id` (auth) → { message }
-- `DELETE /vault/:id` (auth) → { message }
+## 🌐 API Endpoints
 
-## Troubleshooting
+### Authentication
 
-- 401 on vault routes → re-login to refresh token; verify `Authorization: Bearer <token>`
-- Mobile cannot reach backend → use `10.0.2.2` (Android emulator) or your LAN IP via `--dart-define`
-- DB connection errors → check `.env` values and that `usdm_app` exists with tables from `schema.sql`
+| Method | Endpoint | Auth | Description | Request Body |
+|--------|----------|------|-------------|--------------|
+| `POST` | `/signup` | ❌ | Register new user | `{ username, password }` |
+| `POST` | `/login` | ❌ | Authenticate user | `{ username, password }` |
 
-## Roadmap
+**Response:**
+```json
+{
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
 
-- Auth & Security
-  - Optional client-side (zero-knowledge) encryption
-  - Refresh tokens and token revocation
-  - Rate limiting and IP-based throttling on auth routes
-- Vault UX
-  - Edit item dialog and fields validation
-  - Password generator and password strength meter
-  - Search, sort, and filters; pagination for large vaults
-  - Import/Export (CSV/JSON) with safe handling
-- Platform integrations
-  - Biometric unlock (device secure enclave)
-  - Desktop tray menu quick copy
-- DevOps
-  - Docker Compose (API + MySQL)
-  - CI for lint/test; basic integration tests
+### Vault Management
 
-## Contributing
+> 🔒 All vault endpoints require JWT authentication via `Authorization: Bearer <token>` header
 
-1. Fork and clone the repo.
-2. Create a feature branch from `main`.
-3. For the backend:
-   - Copy `usdm-backend/.env.example` to `.env` and set secrets.
-   - Run `npm install` and `npm run dev`.
-4. For the Flutter app:
-   - Run `flutter pub get`.
-   - `flutter run` (use `--dart-define=API_BASE_URL=...` as needed).
-5. Add tests where reasonable. Keep secrets out of commits.
-6. Open a pull request with a clear description and screenshots if UI changes.
+| Method | Endpoint | Description | Request Body |
+|--------|----------|-------------|--------------|
+| `GET` | `/vault` | List all vault items | - |
+| `POST` | `/vault` | Create new vault item | `{ title, username, url, password, notes }` |
+| `PUT` | `/vault/:id` | Update vault item | `{ title, username, url, password, notes }` |
+| `DELETE` | `/vault/:id` | Delete vault item | - |
+
+**Vault Item Response:**
+```json
+[
+  {
+    "id": 1,
+    "title": "GitHub",
+    "username": "user@example.com",
+    "url": "https://github.com",
+    "password": "••••••••",
+    "notes": "Personal account",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z"
+  }
+]
+```
+
+---
+
+## 🛠️ Troubleshooting
+
+### Common Issues
+
+<details>
+<summary><b>❌ 401 Unauthorized on vault routes</b></summary>
+
+**Cause:** Expired or invalid JWT token
+
+**Solution:**
+1. Re-login to obtain a fresh token
+2. Verify `Authorization: Bearer <token>` header is set
+3. Check JWT_SECRET matches between server and environment
+
+</details>
+
+<details>
+<summary><b>📱 Mobile app cannot reach backend</b></summary>
+
+**Cause:** Network configuration issue
+
+**Solution:**
+- **Android Emulator:** Use `http://10.0.2.2:3000`
+- **Physical Device:** Use your computer's LAN IP
+  ```bash
+  flutter run --dart-define=API_BASE_URL=http://192.168.1.100:3000
+  ```
+- Ensure firewall allows connections on port 3000
+
+</details>
+
+<details>
+<summary><b>💾 SQLite database issues</b></summary>
+
+**Cause:** Incorrect `DB_PATH`/`DB_FILE` configuration or missing write permissions
+
+**Solution:**
+1. Confirm the database file exists (default `%LOCALAPPDATA%\DaManage\usdm.db` on Windows or `usdm-backend/data/usdm.db` otherwise).
+2. Ensure the process has permission to create/write the chosen directory.
+3. Delete the broken database file and restart the backend to recreate the schema.
+4. If using manual `.env`, double-check that only one of `DB_PATH` or `DB_FILE` is set.
+
+</details>
+
+<details>
+<summary><b>🔐 Encryption/Decryption errors</b></summary>
+
+**Cause:** Invalid or changed `VAULT_KEY`
+
+**Solution:**
+1. Verify `VAULT_KEY` is a valid 32-byte Base64 string
+2. **⚠️ Warning:** Changing the key will invalidate all existing vault data
+3. Use the same key consistently across restarts
+
+</details>
+
+---
+
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+### 🔧 Development Setup
+
+1. **Fork & Clone**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/DaManage.git
+   cd DaManage
+   ```
+
+2. **Create Feature Branch**
+   ```bash
+   git checkout -b feature/your-amazing-feature
+   ```
+
+3. **Backend Development**
+   ```bash
+   cd usdm-backend
+   cp .env.example .env
+   # Edit .env with your config
+   npm install
+   npm run dev
+   ```
+
+4. **Frontend Development**
+   ```bash
+   cd usdm_gui
+   flutter pub get
+   flutter run
+   ```
+
+5. **Make Changes**
+   - Write clean, documented code
+   - Follow existing code style
+   - Add tests where applicable
+   - Update documentation as needed
+
+6. **Commit & Push**
+   ```bash
+   git add .
+   git commit -m "feat: add amazing feature"
+   git push origin feature/your-amazing-feature
+   ```
+
+7. **Open Pull Request**
+   - Provide clear description
+   - Include screenshots for UI changes
+   - Reference related issues
+
+
+## 📄 License
+
+
+---
+
+<div align="center">
+
+### ⭐ Star this repository if you find it helpful!
+
+[Report Bug](https://github.com/Gr0osky/DaManage/issues) • 
+[Request Feature](https://github.com/Gr0osky/DaManage/issues) • 
+[Documentation](https://github.com/Gr0osky/DaManage/wiki)
+
+</div>

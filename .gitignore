@@ -1,35 +1,63 @@
-# Root
+# ============================================
+#  DaManage Password Manager - Git Ignore
+# ============================================
+
+# ========== OS Generated Files ==========
 .DS_Store
+.DS_Store?
 Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# ========== Logs & Temporary Files ==========
 *.log
 *.tmp
+*.temp
 *.swp
 *.swo
+*~
+.cache/
 
-# Environment / Secrets
+# ========== Environment / Secrets ==========
 .env
 .env.*
+!.env.example
 !*.example
 
-# Node backend
+# ========== Node.js Backend ==========
 usdm-backend/node_modules/
 usdm-backend/npm-debug.log*
-usdm-backend/yarn-error.log
+usdm-backend/yarn-debug.log*
+usdm-backend/yarn-error.log*
+usdm-backend/pnpm-debug.log*
 usdm-backend/pnpm-lock.yaml
 usdm-backend/.npmrc
+usdm-backend/.pnpm-store/
 
-# Build outputs
+# Backend Build & Distribution
 usdm-backend/dist/
+usdm-backend/build/
+usdm-backend/*.exe
+usdm-backend/*.bat
 
-# Flutter / Dart
+# ========== Flutter / Dart ==========
 usdm_gui/.dart_tool/
 usdm_gui/.packages
 usdm_gui/.flutter-plugins
 usdm_gui/.flutter-plugins-dependencies
 usdm_gui/.metadata
 usdm_gui/build/
+usdm_gui/.fvm/
+usdm_gui/pubspec.lock.backup
 
-# Flutter platform builds
+# ========== iOS Build Artifacts ==========
 usdm_gui/ios/Flutter/Flutter.framework
 usdm_gui/ios/Flutter/Flutter.podspec
 usdm_gui/ios/Flutter/Generated.xcconfig
@@ -38,73 +66,164 @@ usdm_gui/ios/Flutter/app.zip
 usdm_gui/ios/Flutter/flutter_export_environment.sh
 usdm_gui/ios/ServiceDefinitions.json
 usdm_gui/ios/Runner/GeneratedPluginRegistrant.*
+usdm_gui/ios/.symlinks/
 
 # CocoaPods
 usdm_gui/ios/Pods/
 usdm_gui/ios/Podfile.lock
 
-# Android
+# ========== Android Build Artifacts ==========
 usdm_gui/android/.gradle/
 usdm_gui/android/.idea/
 usdm_gui/android/local.properties
 usdm_gui/android/**/generated/
 usdm_gui/android/**/captures/
 usdm_gui/android/**/outputs/
+usdm_gui/android/app/debug/
+usdm_gui/android/app/profile/
+usdm_gui/android/app/release/
+usdm_gui/android/**/build/
 
-# VS Code / IDE
+# ========== IDEs & Editors ==========
 .vscode/
 .idea/
+*.iml
+.project
+.classpath
+.settings/
+*.sublime-workspace
+*.sublime-project
 
-# Coverage
+# ========== Testing & Coverage ==========
 coverage/
+.nyc_output/
+*.coverage
+.coverage.*
+test-results/
 
-# Lock files (optional - keep if using)
+# ========== Lock Files (Optional) ==========
+# Uncomment to ignore lock files:
 # usdm_gui/pubspec.lock
 # usdm-backend/package-lock.json
 
-# Misc
-**/*.iml
-
-# -------- Additional Flutter platform artifacts --------
-# iOS/macOS Xcode
+# ========== iOS/macOS Xcode ==========
 usdm_gui/ios/DerivedData/
 usdm_gui/ios/.generated/
 usdm_gui/ios/Runner.xcworkspace/xcuserdata/
 usdm_gui/ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
-usdm_gui/ios/.symlinks/
 usdm_gui/ios/Flutter/ephemeral/
+usdm_gui/ios/.last_build_id
+usdm_gui/ios/Runner.xcodeproj/xcuserdata/
+usdm_gui/ios/Runner.xcodeproj/project.xcworkspace/xcuserdata/
 usdm_gui/macos/DerivedData/
 usdm_gui/macos/Pods/
 usdm_gui/macos/Podfile.lock
 usdm_gui/macos/Flutter/ephemeral/
+usdm_gui/macos/Flutter/GeneratedPluginRegistrant.*
 
-# Android
+# ========== Android Signing & Build ==========
 usdm_gui/android/key.properties
 usdm_gui/android/*.keystore
 usdm_gui/android/**/*.keystore
 usdm_gui/android/*.jks
 usdm_gui/android/**/*.jks
 usdm_gui/android/.cxx/
+usdm_gui/android/**/GeneratedPluginRegistrant.*
 
-# Windows
+# ========== Windows Build ==========
 usdm_gui/windows/flutter/ephemeral/
+usdm_gui/windows/flutter/generated_plugins.cmake
+usdm_gui/windows/flutter/generated_plugin_registrant.*
 usdm_gui/windows/Runner/GeneratedPluginRegistrant.*
 
-# Linux
+# ========== Linux Build ==========
 usdm_gui/linux/flutter/ephemeral/
 usdm_gui/linux/flutter/generated_plugin_registrant.*
+usdm_gui/linux/flutter/generated_plugins.cmake
 
-# Web (build artifacts covered by build/)
+# ========== Web Build ==========
 usdm_gui/build/web/
+usdm_gui/web/*.g.dart
 
-# Flutter tool state
+# ========== Flutter Tool State ==========
 .flutter-plugins
 .flutter-plugins-dependencies
 .pub-cache/
 .packages
+.dart_tool/
+.pub/
 
 # Node/npm logs (catch-all)
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# ========== Node Backend Caches ==========
+usdm-backend/.eslintcache
+usdm-backend/coverage/
+usdm-backend/.nyc_output/
+usdm-backend/.cache/
+usdm-backend/.parcel-cache/
+usdm-backend/.turbo/
+usdm-backend/.vercel/
+usdm-backend/.next/
+usdm-backend/.nuxt/
+
+# ========== Firebase & Google Services ==========
+usdm_gui/android/**/google-services.json
+usdm_gui/ios/**/GoogleService-Info.plist
+usdm_gui/lib/firebase_options.dart
+
+# ========== Certificates & Keys ==========
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+**/*.cer
+**/*.crt
+**/*.der
+**/*.keystore
+**/*.jks
+
+# ========== Local Databases ==========
+**/*.sqlite
+**/*.sqlite3
+**/*.db
+**/*.db-journal
+**/*.db-shm
+**/*.db-wal
+usdm-backend/data/*.db
+
+# ========== Editor History ==========
+.history/
+.vscode-test/
+
+# ========== Installer & Distribution ==========
+installer/*.exe
+installer/Output/
+*.msi
+*.dmg
+*.pkg
+*.deb
+*.rpm
+*.AppImage
+
+# ========== Documentation Build ==========
+docs/_build/
+docs/.doctrees/
+site/
+
+# ========== Miscellaneous ==========
+*.bak
+*.backup
+*.orig
+*.rej
+*.patch
+.venv/
+venv/
+ENV/
+
+# Keep example files
+!*.example
+!example.*
