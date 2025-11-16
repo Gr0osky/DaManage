@@ -92,7 +92,7 @@ Before you begin, ensure you have the following installed:
 | 🎯 **Flutter SDK** | Latest | Frontend framework |
 | 💠 **PowerShell 7+** *(Windows only)* | Latest | Helper scripts |
 
-> 💾 **Database**: The backend now uses an embedded SQLite database. No separate database server is required—the schema is applied automatically on first run.
+> 💾 **Database**: The backend uses an embedded SQLite database. No separate database server is required—the schema is applied automatically on first run.
 
 ### 1️⃣ Backend Setup
 
