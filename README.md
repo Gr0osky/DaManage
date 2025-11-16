@@ -454,17 +454,5 @@ We welcome contributions! Here's how you can help:
    - Reference related issues
 
 
-## 📄 License
-
-
 ---
 
-<div align="center">
-
-### ⭐ Star this repository if you find it helpful!
-
-[Report Bug](https://github.com/Gr0osky/DaManage/issues) • 
-[Request Feature](https://github.com/Gr0osky/DaManage/issues) • 
-[Documentation](https://github.com/Gr0osky/DaManage/wiki)
-
-</div>
