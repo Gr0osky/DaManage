@@ -4,7 +4,6 @@
 
 ### *Secure Password Management, Simplified*
 
-[![Status](https://img.shields.io/badge/status-in_progress-blue?style=for-the-badge)](https://github.com/Gr0osky/DaManage)
 [![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org)
 [![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com)
@@ -38,9 +37,7 @@
 - [📦 Project Structure](#-project-structure)
 - [🌐 API Endpoints](#-api-endpoints)
 - [🛠️ Troubleshooting](#️-troubleshooting)
-- [🗺️ Roadmap](#️-roadmap)
 - [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
 
 ---
 
@@ -95,7 +92,7 @@ Before you begin, ensure you have the following installed:
 | 🎯 **Flutter SDK** | Latest | Frontend framework |
 | 💠 **PowerShell 7+** *(Windows only)* | Latest | Helper scripts |
 
-> 💾 **Database**: The backend now uses an embedded SQLite database. No separate database server is required—the schema is applied automatically on first run.
+> 💾 **Database**: The backend uses an embedded SQLite database. No separate database server is required—the schema is applied automatically on first run.
 
 ### 1️⃣ Backend Setup
 
@@ -457,17 +454,5 @@ We welcome contributions! Here's how you can help:
    - Reference related issues
 
 
-## 📄 License
-
-
 ---
 
-<div align="center">
-
-### ⭐ Star this repository if you find it helpful!
-
-[Report Bug](https://github.com/Gr0osky/DaManage/issues) • 
-[Request Feature](https://github.com/Gr0osky/DaManage/issues) • 
-[Documentation](https://github.com/Gr0osky/DaManage/wiki)
-
-</div>
