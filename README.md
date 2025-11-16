@@ -4,7 +4,6 @@
 
 ### *Secure Password Management, Simplified*
 
-[![Status](https://img.shields.io/badge/status-in_progress-blue?style=for-the-badge)](https://github.com/Gr0osky/DaManage)
 [![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org)
 [![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com)
