@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔐 DaManage
+#  DaManage
 
 ### *Secure Password Management, Simplified*
 
@@ -25,29 +25,29 @@
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [✨ Features](#-features)
-- [🚀 Quick Start](#-quick-start)
+- [ Features](#-features)
+- [ Quick Start](#-quick-start)
   - [Prerequisites](#prerequisites)
   - [Backend Setup](#1️⃣-backend-setup)
-  - [Frontend Setup](#2️⃣-frontend-setup)
-- [🏗️ Architecture](#️-architecture)
-- [🔒 Security](#-security)
-- [📦 Project Structure](#-project-structure)
-- [🌐 API Endpoints](#-api-endpoints)
-- [🛠️ Troubleshooting](#️-troubleshooting)
-- [🤝 Contributing](#-contributing)
+  - [Frontend Setup](#-frontend-setup)
+- [ Architecture](#️-architecture)
+- [ Security](#-security)
+- [ Project Structure](#-project-structure)
+- [ API Endpoints](#-api-endpoints)
+- [ Troubleshooting](#️-troubleshooting)
+- [ Contributing](#-contributing)
 
 ---
 
-## ✨ Features
+##  Features
 
 <table>
 <tr>
 <td width="50%">
 
-### 🔐 Security First
+###  Security First
 - **AES-256-GCM** encryption for vault items
 - **Bcrypt** password hashing
 - **JWT** authentication
@@ -58,7 +58,7 @@
 <tr>
 <td width="50%">
 
-### 🚀 Performance
+###  Performance
 - Lightweight Node.js backend
 - Embedded SQLite database (zero external server)
 - Fast encryption/decryption
@@ -67,11 +67,11 @@
 </td>
 <td width="50%">
 
-### 📱 Platform Support
-- 🖥️ Windows, macOS, Linux
-- 📱 Android & iOS
-- 🌐 Web (Progressive Web App)
-- ☁️ Cloud-ready architecture
+###  Platform Support
+-  Windows, macOS, Linux
+- Android & iOS
+- Web (Progressive Web App)
+-  Cloud-ready architecture
 
 </td>
 </tr>
@@ -79,7 +79,7 @@
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -87,14 +87,14 @@ Before you begin, ensure you have the following installed:
 
 | Tool | Version | Purpose |
 |------|---------|---------|
-| 🟢 **Node.js** | v18+ | Backend runtime |
-| 📦 **npm** | Latest | Package management |
-| 🎯 **Flutter SDK** | Latest | Frontend framework |
-| 💠 **PowerShell 7+** *(Windows only)* | Latest | Helper scripts |
+| **Node.js** | v18+ | Backend runtime |
+|  **npm** | Latest | Package management |
+|  **Flutter SDK** | Latest | Frontend framework |
+| **PowerShell 7+** *(Windows only)* | Latest | Helper scripts |
 
-> 💾 **Database**: The backend uses an embedded SQLite database. No separate database server is required—the schema is applied automatically on first run.
+>  **Database**: The backend uses an embedded SQLite database. No separate database server is required—the schema is applied automatically on first run.
 
-### 1️⃣ Backend Setup
+###  Backend Setup
 
 #### Step 1: Initialize Environment & Database
 
@@ -136,7 +136,7 @@ VAULT_KEY=your_base64_key_here
 # AUDIT_LOG_PATH=C:\\Users\\you\\AppData\\Local\\DaManage\\logs
 ```
 
-💡 **Generate secrets manually (if not using the script):**
+ **Generate secrets manually (if not using the script):**
 
 ```bash
 node -e "const crypto=require('crypto');
@@ -160,7 +160,7 @@ npm start
 pwsh -File Start-Backend.ps1
 ```
 
-### 2️⃣ Frontend Setup
+###  Frontend Setup
 
 #### Step 1: Install Dependencies
 
@@ -188,29 +188,29 @@ flutter run -d emulator
 flutter run --dart-define=API_BASE_URL=http://your-server:3000
 ```
 
-📱 **Android Network Configuration:**
+ **Android Network Configuration:**
 - Emulator automatically uses `http://10.0.2.2:3000`
 - Physical device requires your computer's LAN IP
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```mermaid
 graph TB
-    subgraph Frontend["🎨 Flutter Frontend"]
+    subgraph Frontend[" Flutter Frontend"]
         UI[User Interface]
         API[API Client]
         Storage[Local Storage]
     end
     
-    subgraph Backend["⚙️ Node.js Backend"]
+    subgraph Backend[" Node.js Backend"]
         Express[Express Server]
         Auth[JWT Auth]
         Crypto[AES-256-GCM]
     end
     
-    subgraph Database["💾 SQLite Database"]
+    subgraph Database[" SQLite Database"]
         Users[Users Table]
         Vault[Vault Items Table]
     end
@@ -236,9 +236,9 @@ graph TB
 
 ---
 
-## 🔒 Security
+## Security
 
-### 🛡️ Security Measures
+###  Security Measures
 
 | Component | Implementation | Description |
 |-----------|----------------|-------------|
@@ -250,9 +250,9 @@ graph TB
 | **Rate Limiting & Brute Force** | express-rate-limit + custom lockouts | Protects auth endpoints |
 | **Security Auditing** | Structured log files | Tracks sensitive events & suspicious activity |
 
-### ⚠️ Security Best Practices
+### Security Best Practices
 
-> **🔐 Keep Your Secrets Safe**
+> ** Keep Your Secrets Safe**
 > - Never commit `.env` files to version control
 > - Use strong, random keys for `JWT_SECRET` and `VAULT_KEY`
 > - Rotate secrets regularly in production
@@ -260,7 +260,7 @@ graph TB
 > - Monitor security audit logs stored under `%LOCALAPPDATA%\DaManage\logs` (or `AUDIT_LOG_PATH`)
 
 
-## 📦 Project Structure
+##  Project Structure
 
 ```
 DaManage/
@@ -297,7 +297,7 @@ DaManage/
 
 ---
 
-## 🌐 API Endpoints
+##  API Endpoints
 
 ### Authentication
 
@@ -316,7 +316,7 @@ DaManage/
 
 ### Vault Management
 
-> 🔒 All vault endpoints require JWT authentication via `Authorization: Bearer <token>` header
+>  All vault endpoints require JWT authentication via `Authorization: Bearer <token>` header
 
 | Method | Endpoint | Description | Request Body |
 |--------|----------|-------------|--------------|
@@ -343,7 +343,7 @@ DaManage/
 
 ---
 
-## 🛠️ Troubleshooting
+##  Troubleshooting
 
 ### Common Issues
 
@@ -360,7 +360,7 @@ DaManage/
 </details>
 
 <details>
-<summary><b>📱 Mobile app cannot reach backend</b></summary>
+<summary><b> Mobile app cannot reach backend</b></summary>
 
 **Cause:** Network configuration issue
 
@@ -388,13 +388,13 @@ DaManage/
 </details>
 
 <details>
-<summary><b>🔐 Encryption/Decryption errors</b></summary>
+<summary><b>Encryption/Decryption errors</b></summary>
 
 **Cause:** Invalid or changed `VAULT_KEY`
 
 **Solution:**
 1. Verify `VAULT_KEY` is a valid 32-byte Base64 string
-2. **⚠️ Warning:** Changing the key will invalidate all existing vault data
+2. **Warning:** Changing the key will invalidate all existing vault data
 3. Use the same key consistently across restarts
 
 </details>
@@ -402,11 +402,11 @@ DaManage/
 ---
 
 
-## 🤝 Contributing
+##  Contributing
 
 We welcome contributions! Here's how you can help:
 
-### 🔧 Development Setup
+###  Development Setup
 
 1. **Fork & Clone**
    ```bash
